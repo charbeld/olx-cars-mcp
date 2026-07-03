@@ -1,81 +1,48 @@
 # olx-cars-mcp
 
-An **MCP server** for asking natural-language questions about **OLX / dubizzle
-Lebanon cars-for-sale** — deals, prices, market stats — answered from a cleaned
-Postgres database.
+An MCP server for asking questions about cars for sale on OLX / dubizzle Lebanon.
+It answers from a database that is refreshed automatically, so the numbers stay
+current. You do not need to install or run anything. Just add the hosted server
+to your MCP client and start asking.
 
-Ask things like:
-- *"Best Mercedes deals posted this week under $25k"*
-- *"What's a 2019 Kia Sportage worth?"*
-- *"Show me BMWs under $10k in Beirut, cheapest first"*
-- *"Is this a good price? https://www.olx.com.lb/ad/…-ID116961204.html"*
-- *"How does a Range Rover Sport depreciate by year?"*
+## Install
 
-## Two ways to use it
+Add the hosted server to Claude Code:
 
-### A) Hosted — just add a URL (no install, no credentials)
-If a public instance is running, add it to Claude Code:
-```bash
-claude mcp add --transport http olx-cars https://<the-public-url>/mcp
 ```
-…then ask car questions. Nothing to install; you don't need database access.
-
-### B) Local (stdio) — run it yourself
-Needs a read-only `CARS_DATABASE_URL` to the cars database.
-```bash
-pip install git+https://github.com/charbeld/olx-cars-mcp
-```
-Claude Desktop / Code config:
-```json
-{
-  "mcpServers": {
-    "olx-cars": {
-      "command": "olx-cars-mcp",
-      "env": { "CARS_DATABASE_URL": "postgresql://…?sslmode=require" }
-    }
-  }
-}
+claude mcp add --transport http olx-cars https://olx-cars-mcp-196205401893.us-central1.run.app/mcp
 ```
 
-## Tools
+That is all. No accounts, no keys, no local setup. If your MCP client is not
+Claude Code, point it at the same URL as a streamable HTTP server.
 
-| Tool | Purpose |
-|------|---------|
-| `search_cars` | filter/sort active cars (make, model, year, price, mileage, region, seller) |
-| `find_deals` | underpriced cars vs comparable listings (discount, comps, mileage flag, posted date) |
-| `market_price` | median/p25/p75 + median mileage for a make+model+year |
-| `rank_car` | where a given listing (id/url) sits vs its comps |
-| `depreciation` | median price by year for a make+model |
-| `market_overview` | supply, top makes, medians, avg days-listed (optionally by region) |
-| `car_details` | full spec + all photo URLs + price history for one car |
-| `list_makes` / `list_models` | available makes/models with counts |
-| `query_sql` | *(opt-in via `ALLOW_SQL=1`)* guarded read-only SELECT for open-ended analytics |
+## What you can ask
 
-Data is cars-for-sale only, cleaned (no rentals/parts/placeholder-priced/duplicate/
-invalid-year listings), with mileage-aware deal detection. Deals are algorithmic
-leads (price + mileage vs same make/model/year) — verify condition/history on the
-listing.
+- Best Mercedes deals posted this week under 25000
+- What is a 2019 Kia Sportage worth
+- Show me BMWs under 10000 in Beirut, cheapest first
+- Is this a good price? (paste an OLX listing link)
+- How does a Range Rover Sport lose value by year
+- Which makes have the most listings in Beirut and their median price
+- Full details and photos for a specific listing
 
-## Deploy a public instance (free)
+## What it can do
 
-The server speaks **streamable HTTP** at `/…/mcp`. Any host that runs the Docker
-image works. The env vars:
-- `CARS_DATABASE_URL` — **read-only** Postgres DSN (secret)
-- `ALLOW_SQL` — leave `0` for public (keeps the arbitrary-SQL tool off)
+- Search cars by make, model, year, price, mileage, region and seller.
+- Find deals: cars priced below similar listings (same make, model and year),
+  with the discount, how many listings it was compared against, and whether the
+  mileage is at or below average.
+- Give a market price for any make, model and year (median and range).
+- Rank a specific listing against comparable cars to see if it is a good price.
+- Show how a model depreciates by year.
+- Give a market overview: supply, top makes, median prices and days listed.
+- Return full details, all photos and price history for a listing.
 
-**Google Cloud Run** (recommended — generous free tier, scale-to-zero):
-```bash
-gcloud run deploy olx-cars-mcp --source . --region us-central1 \
-  --allow-unauthenticated --port 8000 \
-  --set-env-vars ALLOW_SQL=0 --set-env-vars CARS_DATABASE_URL="postgresql://…"
-```
-Public MCP URL: `https://olx-cars-mcp-xxxx.run.app/mcp`
+## Notes
 
-**Hugging Face Spaces** (no credit card): create a **Docker** Space from this repo,
-add `CARS_DATABASE_URL` as a Space secret, set `ALLOW_SQL=0`. URL:
-`https://<user>-olx-cars-mcp.hf.space/mcp`
+The data is cars for sale only, cleaned to remove rentals, parts, plates,
+placeholder prices, duplicates and listings with no valid year. Deals are
+suggestions based on price and mileage versus similar cars. They do not account
+for trim, condition or accident history, so always check the actual listing.
 
-**Render** (`render.yaml` included): connect the repo, set `CARS_DATABASE_URL`.
-
-## License
-MIT
+License: MIT
