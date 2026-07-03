@@ -1,0 +1,12 @@
+# One-click deploy on Render (free web service). Connect this repo in the Render
+# dashboard, then set CARS_DATABASE_URL (read-only DSN) as a secret env var.
+services:
+  - type: web
+    name: olx-cars-mcp
+    runtime: docker
+    plan: free
+    envVars:
+      - key: CARS_DATABASE_URL
+        sync: false        # set this in the dashboard (secret)
+      - key: ALLOW_SQL
+        value: "0"         # keep the open-ended SQL tool off for the public
