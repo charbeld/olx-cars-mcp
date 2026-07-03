@@ -7,14 +7,32 @@ to your MCP client and start asking.
 
 ## Install
 
-Add the hosted server to Claude Code:
+No accounts, no keys, no local setup. The server URL is:
+
+```
+https://olx-cars-mcp-196205401893.us-central1.run.app/mcp
+```
+
+### Claude Code
+
+Run:
 
 ```
 claude mcp add --transport http olx-cars https://olx-cars-mcp-196205401893.us-central1.run.app/mcp
 ```
 
-That is all. No accounts, no keys, no local setup. If your MCP client is not
-Claude Code, point it at the same URL as a streamable HTTP server.
+### Claude Desktop or Claude web
+
+1. Open Settings, then Connectors (also called Integrations).
+2. Click Add custom connector.
+3. Give it a name, for example OLX Cars.
+4. Paste the URL above.
+5. Choose Streamable HTTP as the transport type.
+6. Save. No API key or login is needed.
+
+### Other MCP clients
+
+Point them at the same URL as a streamable HTTP server.
 
 ## What you can ask
 
