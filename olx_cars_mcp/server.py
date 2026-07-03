@@ -16,8 +16,12 @@ import threading
 from typing import Any, Optional
 
 from mcp.server.fastmcp import FastMCP
+from mcp.server.transport_security import TransportSecuritySettings
 
-mcp = FastMCP("olx-cars")
+# public HTTPS endpoint (behind Cloud Run etc.) — the browser-focused DNS-rebinding
+# guard would otherwise reject the proxy Host header with HTTP 421.
+mcp = FastMCP("olx-cars",
+              transport_security=TransportSecuritySettings(enable_dns_rebinding_protection=False))
 
 _POSTED = "to_timestamp((l.data->>'createdAt')::bigint)"
 
