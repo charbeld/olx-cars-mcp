@@ -40,9 +40,7 @@ Claude Code, point it at the same URL as a streamable HTTP server.
 
 ## Notes
 
-The data is cars for sale only, cleaned to remove rentals, parts, plates,
-placeholder prices, duplicates and listings with no valid year. Deals are
-suggestions based on price and mileage versus similar cars. They do not account
-for trim, condition or accident history, so always check the actual listing.
+The data is cars for sale only. Deals are suggestions, so always check the
+actual listing.
 
 License: MIT
